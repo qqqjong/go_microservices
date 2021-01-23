@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/qqqjong/go_microservices/mvc/services"
+	"github.com/qqqjong/go_microservices/mvc/utils"
 	"net/http"
 	"strconv"
 )
@@ -10,15 +11,22 @@ import (
 func GetUser(resp http.ResponseWriter, req *http.Request) {
 	userId, err := strconv.ParseInt(req.URL.Query().Get("user_id"), 10, 64)
 	if err != nil {
-		resp.WriteHeader(http.StatusNotFound)
-		resp.Write([]byte("user_id mut be a number"))
+		apiErr := &utils.ApplicationError{
+			Message: "user_id mut be a number",
+			StatusCode: http.StatusBadRequest,
+			Code: "bad_request",
+		}
+		jsonValue, _ := json.Marshal(apiErr)
+		resp.WriteHeader(apiErr.StatusCode)
+		resp.Write([]byte(jsonValue))
 		return
 	}
 
-	user, err := services.GetUser(userId)
-	if err != nil {
-		resp.WriteHeader(http.StatusNotFound)
-		resp.Write([]byte(err.Error()))
+	user, apiErr := services.GetUser(userId)
+	if apiErr != nil {
+		jsonValue, _ := json.Marshal(apiErr)
+		resp.WriteHeader(apiErr.StatusCode)
+		resp.Write([]byte(jsonValue))
 		return
 	}
 
