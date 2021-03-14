@@ -5,9 +5,7 @@ import (
 	"github.com/qqqjong/go_microservices/mvc/utils"
 )
 
-type userService struct {
-
-}
+type userService struct {}
 
 var (
 	UsersService userService
